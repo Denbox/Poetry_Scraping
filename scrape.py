@@ -47,15 +47,16 @@ def next_page_url(page):
     else:
         return links[0]
 
-# recursively save the next page until finished
+# don't do this recursively due to max recursion depth after collecting for a while
+# instead, we will use a while loop
 def scrape(url):
-    page = get_page(url)
-    id = get_page_identifier(url)
-    save_poem(page, id)
-    next_link = next_page_url(page)
-    if next_link:
+    while url is not None:
+        page = get_page(url)
+        id = get_page_identifier(url)
+        save_poem(page, id)
+        url = next_page_url(page)
         delay()
-        scrape(next_link)
 
-starting_url = 'https://www.poetryfoundation.org/poetrymagazine/browse?volume=1&issue=1&page=1'
+# starting_url = 'https://www.poetryfoundation.org/poetrymagazine/browse?volume=1&issue=1&page=1'
+starting_url = 'https://www.poetryfoundation.org/poetrymagazine/browse?volume=5&issue=1&page=26'
 scrape(starting_url)
