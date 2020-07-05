@@ -53,13 +53,22 @@ def next_page_url(page):
 # don't do this recursively due to max recursion depth after collecting for a while
 # instead, we will use a while loop
 def scrape(url):
+    num_tries = 3
     while url is not None:
-        page = get_page(url)
-        id = get_page_identifier(url)
-        save_poem(page, id)
-        url = next_page_url(page)
-        delay()
+        # sometimes, requests loads a malformed page
+        # we allow for up to 3 tries to download the page content
+        for _ in range(num_tries):
+            try:
+                page = get_page(url)
+                id = get_page_identifier(url)
+                save_poem(page, id)
+                url = next_page_url(page)
+                delay()
+                break
+            except Exception as e:
+                print('Failure at volume {}, issue {}, page {}: {}'.format(id['volume'], id['issue'], id['page'], e.message))
+
 
 # starting_url = 'https://www.poetryfoundation.org/poetrymagazine/browse?volume=1&issue=1&page=1'
-starting_url = get_url_from_identifier({'volume' : 53, 'issue' : 4, 'page' : 57})
+starting_url = get_url_from_identifier({'volume' : 56, 'issue' : 6, 'page' : 48})
 scrape(starting_url)
