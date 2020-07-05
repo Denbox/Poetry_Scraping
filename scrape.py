@@ -17,6 +17,9 @@ def get_page_identifier(url):
     id = dict([i.split('=') for i in url.split('?')[1].split('&')])
     return id
 
+def get_url_from_identifier(id):
+    return 'https://www.poetryfoundation.org/poetrymagazine/browse?volume={}&issue={}&page={}'.format(id['volume'], id['issue'], id['page'])
+
 def save_poem(page, id):
     # each page has a scanned image representing the poem
     images = page.xpath('//img/@src')
@@ -58,5 +61,5 @@ def scrape(url):
         delay()
 
 # starting_url = 'https://www.poetryfoundation.org/poetrymagazine/browse?volume=1&issue=1&page=1'
-starting_url = 'https://www.poetryfoundation.org/poetrymagazine/browse?volume=5&issue=1&page=26'
+starting_url = get_url_from_identifier({'volume' : 53, 'issue' : 4, 'page' : 57})
 scrape(starting_url)
