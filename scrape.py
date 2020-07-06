@@ -25,9 +25,9 @@ def save_poem(page, id):
     images = page.xpath('//img/@src')
     candidate_images = [i for i in images if i.startswith('https://static.poetryfoundation.org/jstor/')]
     if len(candidate_images) == 0:
-        print('Failure: No image found for volume {}, issue {}, page {}'.format(id['volume'], id['issue'], id['page']))
+        raise RuntimeError('Failure: No image found for volume {}, issue {}, page {}'.format(id['volume'], id['issue'], id['page']))
     elif len(candidate_images) > 1:
-        print('Failure: Too many images found for volume {}, issue {}, page {}'.format(id['volume'], id['issue'], id['page']))
+        raise RuntimeError('Failure: Too many images found for volume {}, issue {}, page {}'.format(id['volume'], id['issue'], id['page']))
     else:
         print('Saved volume {}, issue {}, page {}'.format(id['volume'], id['issue'], id['page']))
         with open('{}_{}_{}.png'.format(id['volume'], id['issue'], id['page']), 'wb') as f:
@@ -70,5 +70,5 @@ def scrape(url):
 
 
 # starting_url = 'https://www.poetryfoundation.org/poetrymagazine/browse?volume=1&issue=1&page=1'
-starting_url = get_url_from_identifier({'volume' : 56, 'issue' : 6, 'page' : 48})
+starting_url = get_url_from_identifier({'volume' : 77, 'issue' : 3, 'page' : 12})
 scrape(starting_url)
