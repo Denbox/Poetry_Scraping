@@ -65,10 +65,10 @@ def scrape(url):
                 url = next_page_url(page)
                 delay()
                 break
-            except Exception as e:
-                print('Failure at volume {}, issue {}, page {}: {}'.format(id['volume'], id['issue'], id['page'], e.message))
+            except Exception as error:
+                print('Failure at volume {}, issue {}, page {}: {}'.format(id['volume'], id['issue'], id['page'], error))
 
 
 # starting_url = 'https://www.poetryfoundation.org/poetrymagazine/browse?volume=1&issue=1&page=1'
-starting_url = get_url_from_identifier({'volume' : 77, 'issue' : 3, 'page' : 12})
+starting_url = get_url_from_identifier({'volume' : 109, 'issue' : 3, 'page' : 33})
 scrape(starting_url)
