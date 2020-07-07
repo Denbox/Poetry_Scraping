@@ -70,5 +70,6 @@ def scrape(url):
 
 
 # starting_url = 'https://www.poetryfoundation.org/poetrymagazine/browse?volume=1&issue=1&page=1'
-starting_url = get_url_from_identifier({'volume' : 109, 'issue' : 3, 'page' : 33})
+# last page is get_url_from_identifier({'volume' : 193, 'issue' : 3, 'page' : 101})
+starting_url = get_url_from_identifier({'volume' : 135, 'issue' : 2, 'page' : 5})
 scrape(starting_url)
