@@ -1,25 +1,26 @@
-import requests
-import time
+import requests, os
 from lxml import html
+from utils import get_page, get_page_identifier, get_url_from_identifier, delay
 
-# the site is not entirely inconsistent. Luckily, October 1912 to December 2008 uses a simple format.
-# basically, we start at the url for October 1912, and keep hitting the right arrow button through December 2008.
+# don't do this recursively due to max recursion depth after collecting for a while
+# instead, we will use a while loop
+def scrape(url):
+    while url is not None:
+        # sometimes, requests loads a malformed page
+        # we know all pages exist with PNG data, next url, etc
+        # keep retrying until we get it
+        while True:
+            try:
+                page = get_page(url)
+                id = get_page_identifier(url)
+                save_poem(page, id)
+                url = next_page_url(page)
+                print(url)
+                delay()
+            except Exception as error:
+                print('Failure at volume {}, issue {}, page {}: {}'.format(id['volume'], id['issue'], id['page'], error))
 
-def get_page(url):
-    # download page and save the html data
-    page_data = requests.get(url).content
-    # parse html as a tree to make it searchable
-    page_as_tree = html.fromstring(page_data)
-    return page_as_tree
-
-# extract volume, issue, and page numbers from url
-def get_page_identifier(url):
-    id = dict([i.split('=') for i in url.split('?')[1].split('&')])
-    return id
-
-def get_url_from_identifier(id):
-    return 'https://www.poetryfoundation.org/poetrymagazine/browse?volume={}&issue={}&page={}'.format(id['volume'], id['issue'], id['page'])
-
+# we save the poems in a directory called PNGs
 def save_poem(page, id):
     # each page has a scanned image representing the poem
     images = page.xpath('//img/@src')
@@ -30,14 +31,9 @@ def save_poem(page, id):
         raise RuntimeError('Failure: Too many images found for volume {}, issue {}, page {}'.format(id['volume'], id['issue'], id['page']))
     else:
         print('Saved volume {}, issue {}, page {}'.format(id['volume'], id['issue'], id['page']))
-        with open('{}_{}_{}.png'.format(id['volume'], id['issue'], id['page']), 'wb') as f:
+        with open(os.path.join('PNGs', '{}_{}_{}.png').format(id['volume'], id['issue'], id['page']), 'wb') as f:
             f.write(requests.get(candidate_images[0]).content)
 
-# VERY IMPORTANT! When webscraping, always make sure to not flood the servers with requests
-# It is possible to use a bunch of threads and scrape the entire site very quickly
-# Instead, the little scraper patiently goes through one by one
-def delay():
-    time.sleep(1)
 
 # if the next page exists, return the url
 # otherwise, return None
@@ -49,24 +45,6 @@ def next_page_url(page):
         return None
     else:
         return links[0]
-
-# don't do this recursively due to max recursion depth after collecting for a while
-# instead, we will use a while loop
-def scrape(url):
-    num_tries = 3
-    while url is not None:
-        # sometimes, requests loads a malformed page
-        # we allow for up to 3 tries to download the page content
-        try:
-            page = get_page(url)
-            id = get_page_identifier(url)
-            save_poem(page, id)
-            url = next_page_url(page)
-            delay()
-            break
-        except Exception as error:
-            print('Failure at volume {}, issue {}, page {}: {}'.format(id['volume'], id['issue'], id['page'], error))
-
 
 # starting_url = 'https://www.poetryfoundation.org/poetrymagazine/browse?volume=1&issue=1&page=1'
 # last page is get_url_from_identifier({'volume' : 193, 'issue' : 3, 'page' : 101})
