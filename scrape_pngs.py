@@ -57,16 +57,15 @@ def scrape(url):
     while url is not None:
         # sometimes, requests loads a malformed page
         # we allow for up to 3 tries to download the page content
-        for _ in range(num_tries):
-            try:
-                page = get_page(url)
-                id = get_page_identifier(url)
-                save_poem(page, id)
-                url = next_page_url(page)
-                delay()
-                break
-            except Exception as error:
-                print('Failure at volume {}, issue {}, page {}: {}'.format(id['volume'], id['issue'], id['page'], error))
+        try:
+            page = get_page(url)
+            id = get_page_identifier(url)
+            save_poem(page, id)
+            url = next_page_url(page)
+            delay()
+            break
+        except Exception as error:
+            print('Failure at volume {}, issue {}, page {}: {}'.format(id['volume'], id['issue'], id['page'], error))
 
 
 # starting_url = 'https://www.poetryfoundation.org/poetrymagazine/browse?volume=1&issue=1&page=1'
