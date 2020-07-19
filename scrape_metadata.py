@@ -18,18 +18,12 @@ def strip_ending(filename):
 def name_score(name):
     return reduce(lambda acc, next: acc * 1000 + int(next), name.split('_'), 1)
 
-
-# we will save our metadata in a Metadata directory. Recall that the PNGs are in the PNGs directory.
 def remaining_urls():
     png_filenames = map(strip_ending, os.listdir('PNGs'))
     metadata_filenames = map(strip_ending, os.listdir('Metadata'))
     remaining_filenames = sorted(set(png_filenames) - set(metadata_filenames), key=name_score)
     return list(map(filename_to_url, remaining_filenames))
 
-
-# we already have the page
-# figure out what part is metadata
-# save it to a file
 def capture_metadata(page):
     class_to_grab = 'c-assetStack-auxiliary'
     metadata_elements = page.xpath('//div[contains(@class, \'{}\')]'.format(class_to_grab))
@@ -42,7 +36,6 @@ def save_captured_data(metadata, id):
 def scrape():
     for url in remaining_urls():
         try:
-            # print(url)
             id = get_page_identifier(url)
             page = get_page(url)
             metadata_to_save = capture_metadata(page)
