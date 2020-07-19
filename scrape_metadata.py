@@ -42,7 +42,7 @@ def save_captured_data(metadata, id):
 def scrape():
     for url in remaining_urls():
         try:
-        # print(url)
+            # print(url)
             id = get_page_identifier(url)
             page = get_page(url)
             metadata_to_save = capture_metadata(page)
