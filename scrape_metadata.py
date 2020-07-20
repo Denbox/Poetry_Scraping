@@ -40,7 +40,7 @@ def scrape():
             page = get_page(url)
             metadata_to_save = capture_metadata(page)
             save_captured_data(metadata_to_save, id)
-            print('Saved volume {}, issue {}, page {}'.format(id['volume'], id['issue'], id['page']))
+            print('Saved volume {}, issue {}, page {} - {:.2f}% finished'.format(id['volume'], id['issue'], id['page'], 100 * len(os.listdir('Metadata')) / len(os.listdir('PNGs'))))
         except Exception as error:
             print('Failure at volume {}, issue {}, page {}: {}'.format(id['volume'], id['issue'], id['page'], error))
             print('Skipping for now')
